@@ -39,7 +39,7 @@ def test_bot_endpoints():
 
 def test_submission_schema():
     print("Verifying submission.jsonl schema...")
-    lines = open("submission.jsonl").readlines()
+    lines = open("submission.jsonl", encoding="utf-8").readlines()
     assert len(lines) == 30, f"Expected 30 lines, got {len(lines)}"
     
     required_keys = {"test_id", "body", "cta", "send_as", "suppression_key", "rationale"}
