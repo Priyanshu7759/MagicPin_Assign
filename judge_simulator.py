@@ -306,15 +306,24 @@ class GroqProvider(LLMProvider):
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
         }
 
-        req = urlrequest.Request(
-            "https://api.groq.com/openai/v1/chat/completions",
-            data=json.dumps({"model": self.model, "messages": messages,
-                            "temperature": 0.2, "max_tokens": 1500}).encode("utf-8"),
-            headers=headers
-        )
-        resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
-        data = json.loads(resp.read().decode("utf-8"))
-        return data["choices"][0]["message"]["content"]
+        retries = 4
+        for attempt in range(retries):
+            req = urlrequest.Request(
+                "https://api.groq.com/openai/v1/chat/completions",
+                data=json.dumps({"model": self.model, "messages": messages,
+                                "temperature": 0.2, "max_tokens": 1500}).encode("utf-8"),
+                headers=headers
+            )
+            try:
+                resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
+                data = json.loads(resp.read().decode("utf-8"))
+                return data["choices"][0]["message"]["content"]
+            except urlerror.HTTPError as e:
+                if e.code == 429 and attempt < retries - 1:
+                    wait_time = (attempt + 1) * 3
+                    time.sleep(wait_time)
+                    continue
+                raise
 
 
 class OllamaProvider(LLMProvider):
