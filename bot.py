@@ -48,6 +48,15 @@ class ReplyBody(BaseModel):
     received_at: Optional[str] = None
     turn_number: int = 1
 
+@app.get("/")
+async def root():
+    return {
+        "status": "ok",
+        "service": "vera-bot",
+        "healthz": "/v1/healthz",
+        "metadata": "/v1/metadata"
+    }
+
 
 @app.get("/v1/healthz")
 async def healthz():
