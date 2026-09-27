@@ -10,7 +10,7 @@ FastAPI server exposing all 5 required endpoints for the evaluation judge harnes
 """
 
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -74,7 +74,7 @@ async def metadata():
         "approach": "4-context grounded composer with multi-turn auto-reply detection & intent transition",
         "contact_email": "soumya@example.com",
         "version": "1.0.0",
-        "submitted_at": datetime.utcnow().isoformat() + "Z"
+        "submitted_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -99,7 +99,7 @@ async def push_context(body: ContextPushBody):
     return {
         "accepted": True,
         "ack_id": f"ack_{body.context_id}_v{body.version}",
-        "stored_at": datetime.utcnow().isoformat() + "Z"
+        "stored_at": datetime.now(timezone.utc).isoformat()
     }
 
 
